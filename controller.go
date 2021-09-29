@@ -152,18 +152,18 @@ func (r *Controller) initRouter(handlers []*Handler) {
 
 		case http.MethodPost:
 
-			r.POST(handler.Url, handler.fn(r.app)) // 处理器注入 app,可以调用server 函数
+			r.POST(handler.Url, handler.Fn(r.app)) // 处理器注入 app,可以调用server 函数
 		case http.MethodGet:
 
-			r.GET(handler.Url, handler.fn(r.app))
+			r.GET(handler.Url, handler.Fn(r.app))
 		case http.MethodDelete:
 
-			r.DELETE(handler.Url, handler.fn(r.app))
+			r.DELETE(handler.Url, handler.Fn(r.app))
 
 		case http.MethodPut:
-			r.PUT(handler.Url, handler.fn(r.app))
+			r.PUT(handler.Url, handler.Fn(r.app))
 		default:
-			r.Any(handler.Url, handler.fn(r.app))
+			r.Any(handler.Url, handler.Fn(r.app))
 		}
 
 	}

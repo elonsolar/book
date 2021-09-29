@@ -38,7 +38,7 @@ func TestApp(t *testing.T) {
 			Method: "GET",
 			Url:    "/test",
 			Name:   "测试",
-			fn: func(app *App) gin.HandlerFunc {
+			Fn: func(app *App) gin.HandlerFunc {
 				return func(c *gin.Context) {
 
 					var params struct {
