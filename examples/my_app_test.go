@@ -1,8 +1,31 @@
-# easy-app 
-a easy way to create golang web app  
+package examples
 
-```
-var app = NewApp(cfg)
+import (
+	"fmt"
+	"testing"
+
+	. "github.com/elonsolar/easy-app"
+	"github.com/elonsolar/easy-app/examples/controller"
+	"github.com/elonsolar/easy-app/examples/service"
+	"github.com/gin-gonic/gin"
+)
+
+var cfg = &Config{
+	ControllerCfg: &ControllerConfig{
+		Port: 8081,
+	},
+	// DaoCfg: &DaoConfig{
+	// 	UserName:     "user",
+	// 	Password:     "123",
+	// 	Host:         "127.0.0.1",
+	// 	Port:         3306,
+	// 	DatabaseName: "test",
+	// },
+}
+
+func TestMyApp(t *testing.T) {
+
+	var app = NewApp(cfg)
 
 	// web层拦截
 	app.Controller.RegisterMidleWare("prefix", func(c *gin.Context) {
@@ -27,5 +50,5 @@ var app = NewApp(cfg)
 	service.InitLogicHandler(app)
 
 	app.Start()
-```
 
+}

@@ -79,7 +79,7 @@ func (r *Controller) UnUseMidleWare(middlewares []string) *Controller {
 // RegisterMidleWare
 func (r *Controller) RegisterMidleWare(name string, fn gin.HandlerFunc) error {
 
-	return (&MidleWare{}).Register(name, fn)
+	return (&MidleWare{c: r}).Register(name, fn)
 }
 
 func (r *Controller) AfterMidleWare(name string) *MidleWare {
@@ -138,10 +138,27 @@ func (r *Controller) WithHandlers(handlers []*Handler, public bool) *Controller 
 
 	if public {
 		r.publicHandlers = append(r.publicHandlers, handlers...)
+		return r
 	}
 
 	r.handlers = append(r.handlers, handlers...)
 	return r
+}
+
+func (c *Controller) AddHandler(name, method, url string, fn func(app *App) gin.HandlerFunc, public bool) {
+
+	handler := &Handler{
+		Method: method,
+		Url:    url,
+		Fn:     fn,
+		Name:   name,
+	}
+	if public {
+		c.publicHandlers = append(c.publicHandlers, handler)
+		return
+	}
+	c.handlers = append(c.handlers, handler)
+
 }
 
 func (r *Controller) initRouter(handlers []*Handler) {

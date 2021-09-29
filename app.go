@@ -12,7 +12,8 @@ type App struct {
 	Dao        *Dao
 	errors     []error
 
-	filters []func(name string, args []interface{})
+	before []func(name string, args []interface{})
+	after  []func(name string, rets []interface{})
 
 	handlerMap map[string]reflect.Value
 }
@@ -22,12 +23,8 @@ func NewApp(cfg *Config) *App {
 	app := &App{
 		cfg:        cfg,
 		handlerMap: make(map[string]reflect.Value, 0),
-		filters: []func(name string, args []interface{}){
-			func(name string, args []interface{}) {
-				fmt.Printf("------------拦截所有 方法 和参数--------- 方法名:%s \n,  参数：%v", name, args)
-			},
-		},
 	}
+
 	if cfg.ControllerCfg != nil {
 
 		ctl := newController(cfg.ControllerCfg, app)
@@ -43,9 +40,14 @@ func NewApp(cfg *Config) *App {
 	return app
 }
 
-func (s *App) WithFilter(filter func(name string, args []interface{})) {
+func (s *App) AddBeforeLogicFilter(filter func(name string, args []interface{})) {
 
-	s.filters = append(s.filters, filter)
+	s.before = append(s.before, filter)
+}
+
+func (s *App) AddAfterLogicFilter(filter func(name string, results []interface{})) {
+
+	s.after = append(s.after, filter)
 }
 
 // Register register a method with name
@@ -60,7 +62,7 @@ func (s *App) Register(name string, fn reflect.Value) {
 // Call call func with name ,and execute
 func (s *App) Call(name string, data []interface{}) interface{} {
 
-	for _, fn := range s.filters {
+	for _, fn := range s.before {
 		fn(name, data)
 	}
 
@@ -78,6 +80,9 @@ func (s *App) Call(name string, data []interface{}) interface{} {
 
 	for _, r := range ret {
 		result = append(result, r.Interface())
+	}
+	for _, fn := range s.after {
+		fn(name, result)
 	}
 	return result
 }
