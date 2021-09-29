@@ -15,7 +15,7 @@ type ControllerConfig struct {
 type Handler struct {
 	Method string
 	Url    string
-	fn     func(app *App) gin.HandlerFunc
+	Fn     func(app *App) gin.HandlerFunc
 	Name   string
 }
 
