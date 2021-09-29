@@ -10,7 +10,7 @@ import (
 
 type Dao struct {
 	app *App
-	db  *gorm.DB
+	*gorm.DB
 }
 
 type DaoConfig struct {
@@ -21,18 +21,18 @@ type DaoConfig struct {
 	DatabaseName string
 }
 
-func NewDao(cfg *DaoConfig, app *App) *Dao {
+func newDao(cfg *DaoConfig, app *App) *Dao {
 	return &Dao{
-		db:  initDb(cfg),
+		DB:  initDb(cfg),
 		app: app,
 	}
 }
 
-func (d *Dao) Use(plugins []gorm.Plugin) error {
+func (d *Dao) UsePlugin(plugins []gorm.Plugin) error {
 
 	for _, plugin := range plugins {
 
-		if err := d.db.Use(plugin); err != nil {
+		if err := d.Use(plugin); err != nil {
 			return err
 		}
 	}

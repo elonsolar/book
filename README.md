@@ -2,18 +2,30 @@
 a easy way to create golang web app  
 
 ```
-var app = NewApp()
-	var controller = NewController(&ControllerConfig{Port: 8081}, app)
-	var service = NewService(app)
-	app.controller = controller
-	app.service = service
 
+	var cfg = &Config{
+		ControllerCfg: &ControllerConfig{
+			Port: 8081,
+		},
+		// DaoCfg: &DaoConfig{
+		// 	UserName:     "user",
+		// 	Password:     "123",
+		// 	Host:         "127.0.0.1",
+		// 	Port:         3306,
+		// 	DatabaseName: "test",
+		// },
+	}
+	var app = NewApp(cfg)
+
+	// logic handlers
 	app.Register("test-handler", reflect.ValueOf(func(id int) string {
 
 		fmt.Println("调用 test_handler 成功", id)
+
 		return "ok"
 	}))
 
+	// dispatcher
 	var handlers = []*Handler{
 		{
 			Method: "GET",
@@ -36,7 +48,7 @@ var app = NewApp()
 		},
 	}
 
-	controller.WithHandlers(handlers, false)
+	app.Controller.WithHandlers(handlers, false)
 
 	app.Start()
 ```

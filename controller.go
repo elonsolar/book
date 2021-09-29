@@ -52,7 +52,7 @@ type Controller struct {
 	app            *App
 }
 
-func NewController(cfg *ControllerConfig, app *App) *Controller {
+func newController(cfg *ControllerConfig, app *App) *Controller {
 	return &Controller{
 		cfg:        cfg,
 		Engine:     gin.Default(),

@@ -6,9 +6,10 @@ import (
 )
 
 type App struct {
-	controller *Controller
-	service    *Service
-	dao        *Dao
+	cfg        *Config
+	Controller *Controller
+	Service    *Service
+	Dao        *Dao
 	errors     []error
 
 	filters []func(name string, args []interface{})
@@ -16,16 +17,30 @@ type App struct {
 	handlerMap map[string]reflect.Value
 }
 
-func NewApp() *App {
+func NewApp(cfg *Config) *App {
 
-	return &App{
+	app := &App{
+		cfg:        cfg,
 		handlerMap: make(map[string]reflect.Value, 0),
 		filters: []func(name string, args []interface{}){
 			func(name string, args []interface{}) {
-				fmt.Println(name, args)
+				fmt.Printf("------------拦截所有 方法 和参数--------- 方法名:%s \n,  参数：%v", name, args)
 			},
 		},
 	}
+	if cfg.ControllerCfg != nil {
+
+		ctl := newController(cfg.ControllerCfg, app)
+		app.Controller = ctl
+	}
+
+	if cfg.DaoCfg != nil {
+
+		dao := newDao(cfg.DaoCfg, app)
+		app.Dao = dao
+
+	}
+	return app
 }
 
 func (s *App) WithFilter(filter func(name string, args []interface{})) {
@@ -69,7 +84,7 @@ func (s *App) Call(name string, data []interface{}) interface{} {
 
 func (a *App) Start() {
 
-	a.controller.Start()
+	a.Controller.Start()
 }
 
 func (a *App) Error() {
